@@ -21,7 +21,7 @@ const API_KEY = process.env.AZURE_OPENAI_API_KEY;
 const API_ENDPOINT = process.env.AZURE_OPENAI_ENDPOINT;
 const DEPLOYMENT_NAME = process.env.AZURE_OPENAI_DEPLOYMENT_NAME;
 function createTray(): void {
-    let tray: Tray = new Tray('icon.png');
+    let tray: Tray = new Tray(path.join(__dirname, '../src/icon.png'));
     const contextMenu = Menu.buildFromTemplate([
         { label: 'Exit', click: () => app.quit() }
     ]);
@@ -155,7 +155,9 @@ app.whenReady().then(() => {
                     }
 
                     // the *entire* stdout and stderr (buffered)
-                    console.log(clipboard.readText());
+                    if (process.env.NODE_ENV === 'development') {
+                        console.log("SelectedText: "+clipboard.readText());
+                    }
                     showOptionsWindow();
 
                 });
@@ -171,7 +173,6 @@ ipcMain.on('option-clicked', async (event, optionNumber: string) => {
     const selectedText = clipboard.readText();
 
     if (selectedText) {
-        console.log('Selected text:', selectedText);
         let template: string = '';
         if (optionNumber === '1') {
             template = `Improve the text in triple below in your own words. Rephrase the text. \
@@ -213,7 +214,6 @@ Do not return anything other than the summary. Do not wrap responses in quotes.`
         resultsWindow?.webContents.send('processing-start');
         showResultsWindow();
         aiResponse = await callAzureOpenAI(prompt);
-
         resultsWindow?.webContents.send('ai-response', aiResponse);
     } else {
         console.log('No text selected');
