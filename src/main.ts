@@ -64,6 +64,7 @@ function createOptionsWindow(): void {
     optionsWindow.on('blur', () => {
         optionsWindow?.hide();
     });
+    optionsWindow.setAlwaysOnTop(true);
 }
 function createResultsWindow(): void {
     resultsWindow = new BrowserWindow({
@@ -175,22 +176,28 @@ ipcMain.on('option-clicked', async (event, optionNumber: string) => {
     if (selectedText) {
         let template: string = '';
         if (optionNumber === '1') {
-            template = `Improve the text in triple below in your own words. Rephrase the text. \
+            template = `Improve the text in triple below in your own words and make it sounds casual. Rephrase the text. \
+                            """
+                            %s
+                            """
+                            Do not return anything other than the rephrased text . Do not wrap responses in quotes.`
+
+        }
+        else if (optionNumber === '2') {
+            template = `Improve the text in triple below in your own words and make it sounds professional. Rephrase the text. \
                             """
                             %s
                             """
                             Do not return anything other than the rephrased text. Do not wrap responses in quotes.`
 
-        }
-        else if (optionNumber === '2') {
 
         }
         else if (optionNumber === '3') {
-            template = `Summarize the text in triple quotes but keep it concise. Summarize using plain and simple language and keep the same tense.
-"""
-%s
-"""
-Do not return anything other than the summary. Do not wrap responses in quotes.`;
+            template = `Act as an English teach, please help refer the text in triple below and point out if there is any spell or grammar error, also, you should explain the detail that how I could improve my writting. Rephrase the text. \
+                            """
+                            %s
+                            """
+                            `
         }
         else if (optionNumber === '4') {
             template = `Translate the text to English in triple quotes but keep it concise. Translation using plain and simple language and keep the same tense.
@@ -202,6 +209,13 @@ Do not return anything other than the summary. Do not wrap responses in quotes.`
         }
         else if (optionNumber === '5') {
             template = `Translate the text to Traditional Chinese in triple quotes but keep it concise. Translation using plain and simple language and keep the same tense.
+"""
+%s
+"""
+Do not return anything other than the summary. Do not wrap responses in quotes.`;
+        }
+        else if (optionNumber === '6') {
+            template = `Generate email title in triple quotes.
 """
 %s
 """
